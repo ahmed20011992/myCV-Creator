@@ -1,0 +1,574 @@
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    username_or_email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    date_of_birth DATE,
+    gender ENUM('Male', 'Female', 'Other'),
+    profile_picture VARCHAR(255),
+    registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login_date TIMESTAMP,
+    -- Additional fields can be added here
+    user_role ENUM('User', 'Moderator', 'Admin') DEFAULT 'User'
+);
+
+CREATE TABLE education (
+    education_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    degree VARCHAR(100) NOT NULL,
+    major VARCHAR(100),
+    institution VARCHAR(255) NOT NULL,
+    location VARCHAR(100),
+    start_date DATE,
+    end_date DATE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE work_experience (
+    experience_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    job_title VARCHAR(100) NOT NULL,
+    company VARCHAR(255) NOT NULL,
+    location VARCHAR(100),
+    start_date DATE NOT NULL,
+    end_date DATE,
+    description TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE user_skills (
+    skill_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    skill_name VARCHAR(100) NOT NULL,
+    skill_level VARCHAR(50),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE user_languages (
+    language_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    language_name VARCHAR(100) NOT NULL,
+    language_proficiency VARCHAR(50),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+________________________________________________________________________________________________-
+
+-- User Table
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    username_or_email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    date_of_birth DATE,
+    gender ENUM('Male', 'Female', 'Other'),
+    registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login_date TIMESTAMP,
+    user_role ENUM('User', 'Moderator', 'Admin') DEFAULT 'User'
+);
+
+-- UserProfile Table
+CREATE TABLE user_profiles (
+    profile_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNIQUE,
+    profile_picture VARCHAR(255),
+    additional_profile_info TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- Education Table
+CREATE TABLE education (
+    education_id INT AUTO_INCREMENT PRIMARY KEY,
+    profile_id INT,
+    degree VARCHAR(100) NOT NULL,
+    major VARCHAR(100),
+    institution VARCHAR(255) NOT NULL,
+    location VARCHAR(100),
+    start_date DATE,
+    end_date DATE,
+    FOREIGN KEY (profile_id) REFERENCES user_profiles(profile_id)
+);
+
+-- Experience Table
+CREATE TABLE experience (
+    experience_id INT AUTO_INCREMENT PRIMARY KEY,
+    profile_id INT,
+    job_title VARCHAR(100) NOT NULL,
+    company VARCHAR(255) NOT NULL,
+    location VARCHAR(100),
+    start_date DATE,
+    end_date DATE,
+    description TEXT,
+    FOREIGN KEY (profile_id) REFERENCES user_profiles(profile_id)
+);
+
+-- Skills Table
+CREATE TABLE skills (
+    skill_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    skill_name VARCHAR(100) NOT NULL,
+    skill_level VARCHAR(50),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+SELECT * from user LEFT JOIN userprofile on user.email = userprofile.userPid
+LEFT JOIN education on edID = userprofile.userPid
+LEFT JOIN Experience on exID = userprofile.userPid
+LEFT JOIN skills on sid =userprofile.userPid
+where user.email = 'elah22nv@student.ju.se'
+
+
+app.get("/api/users/:id", async (req, res) => {
+  const id = req.params.id;
+  db.get("SELECT * from userprofile where email = ?", [id], (err, profile) => {
+    if (err) {
+      res.status(500).json({ error: "Server error" });
+    } else if (profile) {
+       db.get(
+        "SELECT *  from skills where userPid = ?",
+        [profile.userPid],
+        (err, skills) => {
+          if (err) {
+            console.log("ERROR :" + err);
+          } else if (skills) {
+            profile.skills = skills;
+          }
+        }
+      );
+      db.get(
+        "SELECT *  from education where userPid = ?",
+        [profile.userPid],
+        (err, education) => {
+          if (education) {
+            profile.education = education;
+          }
+        }
+      );
+      db.get(
+        "SELECT *  from  Experience where userPid = ?",
+        [profile.userPid],
+        (err, experience) => {
+          if (experience) {
+            profile.experience = experience;
+          }
+        }
+      );
+      res.status(200).json(profile);
+    } else {
+      res.status(404).json({ error: "Not found" });
+    }
+  });
+});
+
+
+/////////chat////////////
+///////////////////////
+app.get("/api/users/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const profile = await getUserProfile(id);
+
+    if (profile) {
+      res.render("user.handlebars", profile);
+    } else {
+      res.status(404).json({ error: "Not found" });
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+function getUserProfile(id) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const userResult = await queryDb(
+        "SELECT * from userprofile where email = ?",
+        [id]
+      );
+      if (!userResult) {
+        resolve(null);
+        return;
+      }
+
+      const profile = { ...userResult };
+
+      const skillsResult = await queryDb(
+        "SELECT * from skills where userPid = ?",
+        [userResult.userPid]
+      );
+      if (skillsResult) {
+        profile.skills = skillsResult;
+      }
+
+      const educationResult = await queryDb(
+        "SELECT * from education where userPid = ?",
+        [userResult.userPid]
+      );
+      if (educationResult) {
+        profile.education = educationResult;
+      }
+
+      const experienceResult = await queryDb(
+        "SELECT * from Experience where userPid = ?",
+        [userResult.userPid]
+      );
+      if (experienceResult) {
+        profile.experience = experienceResult;
+      }
+
+      resolve(profile);
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+function queryDb(query, params) {
+  return new Promise((resolve, reject) => {
+    db.get(query, params, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+///////////////////////7
+SELECT * from user LEFT JOIN userprofile on 
+user.email = userprofile.email LEFT JOIN education on 
+education.userPid = userprofile.userPid LEFT JOIN Experience on 
+Experience.userPid = userprofile.userPid LEFT JOIN skills on 
+skills.userPid =userprofile.userPid where user.email = 'elah22nv@student.ju.se';
+///////////////////////
+/*SELECT * from userprofile where email = 'elah22nv@student.ju.se';
+SELECT *  from skills where userPid = 1; 
+SELECT *  from education where userPid = 1; 
+SELECT *  from Experience where userPid = 1; */
+
+/*SELECT * from user LEFT JOIN userprofile on user.email = userprofile.userPid
+LEFT JOIN education on edID = userprofile.userPid
+LEFT JOIN Experience on exID = userprofile.userPid
+LEFT JOIN skills on sid =userprofile.userPid
+where user.email = 'elah22nv@student.ju.se'*/
+
+// app.get("/api/users/:id", async (req, res) => {
+//   const id = req.params.id;
+//   console.log("ID: ", id);
+//   db.get("SELECT * from userprofile where email = ?", [id], (err, profile) => {
+//     if (err) {
+//       res.status(500).json({ error: "Server error" });
+//     } else if (profile) {
+//       db.get(
+//         "SELECT *  from skills where userPid = ?",
+//         [profile.userPid],
+//         (err, skills) => {
+//           if (err) {
+//             console.log("ERROR :" + err);
+//           } else if (skills) {
+//             profile.skills = skills;
+//           }
+//         }
+//       );
+//       db.get(
+//         "SELECT *  from education where userPid = ?",
+//         [profile.userPid],
+//         (err, education) => {
+//           if (education) {
+//             profile.education = education;
+//           }
+//         }
+//       );
+//       db.get(
+//         "SELECT *  from  Experience where userPid = ?",
+//         [profile.userPid],
+//         (err, experience) => {
+//           if (experience) {
+//             profile.experience = experience;
+//           }
+//         }
+//       );
+//       res.status(200).json(profile);
+//     } else {
+//       res.status(404).json({ error: "Not found" });
+//     }
+//   });
+// });
+//////////////////////////////////////
+
+
+<div id ="menu">
+    <div>email :{{this.email}} </div>
+    <div> Profile
+        <div> First name : {{fname}}</div>
+        <div> Last name : {{lname}}</div>
+        <div> Gender : {{gender}}</div>
+
+
+<div>proffession:::{{proffession}}</div>
+<div>the level of this Profile:::: {{plevel}}</div>
+<div>descyourself :::: {{descyourself}}</div>
+
+    </div>
+<div> <br>skills:::::
+    <div>
+    {{#each skills}}
+          <div> skill name:{{sname}} </div>
+          <div> skill type:{{stype}} </div>
+          <div> skill level:{{slevel}} </div>
+    {{/each}}
+    </div>
+
+    <div> <br> education :::: <br>
+        {{#each education}}
+        <div>Degree {{Degree}}</div>
+        <div>startDate {{startDate}}</div>
+        <div>endDate {{endDate}}</div>
+        <div>language_of_edu {{language_of_edu}}</div>
+        {{/each}}
+    </div>
+    <div>
+        {{#each experience}}
+        <div>jobTitle {{jobTitle}}</div>
+        <div>startDate{{startDate}}</div>
+        <div>endDate{{endDate}}</div>
+        <div>place{{place}}</div>
+        {{/each}}
+    </div>
+</div> 
+</div>
+ 
+
+          
+ ///////         
+ /* Reset default styles */
+* {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  box-sizing: border-box; /* Change to border-box for consistent box sizing */
+}
+
+/* Style the form container */
+#signUp {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto; /* Center the form horizontally */
+  max-width: 700px; /* Adjust the maximum width as needed */
+  padding: 20px; /* Add padding to the form container for spacing */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.8
+  ); /* Add a semi-transparent background */
+  border-radius: 10px; /* Add rounded corners to the form container */
+}
+
+/* Style form inputs */
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  border-bottom: 1px solid black;
+  background: transparent;
+}
+
+/* Style the body */
+body {
+  text-align: center;
+  background-image: url("/img/pexels-edward-jenner-4253060.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* Ensure background image remains fixed */
+}
+
+/* Style the menu */
+#menu {
+  text-align: center;
+  margin: 0 auto;
+  width: 90%;
+  height: 40px;
+  margin-bottom: 32px;
+  margin-top: 32px;
+  /* Remove the border, as it's commented out */
+}
+
+/* Style hover effect for links */
+a:hover {
+  background-color: rgb(20, 181, 124);
+}
+
+/* Style the login container */
+#login {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+}
+///////////////////////////////////////
+
+/* Reset default styles */
+* {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  box-sizing: border-box; /* Change to border-box for consistent box sizing */
+}
+
+/* Style the form container */
+#signUp {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto; /* Center the form horizontally */
+  max-width: 700px; /* Adjust the maximum width as needed */
+  padding: 20px; /* Add padding to the form container for spacing */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.8
+  ); /* Add a semi-transparent background */
+  border-radius: 10px; /* Add rounded corners to the form container */
+}
+
+/* Style form inputs */
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  border-bottom: 1px solid black;
+  background: transparent;
+}
+
+/* Style the body */
+body {
+  text-align: center;
+  background-image: url("/img/pexels-edward-jenner-4253060.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* Ensure background image remains fixed */
+}
+
+/* Style the menu */
+#menu {
+  text-align: center;
+  margin: 0 auto;
+  width: 90%;
+  height: 40px;
+  margin-bottom: 32px;
+  margin-top: 32px;
+  /* Remove the border, as it's commented out */
+}
+
+/* Style hover effect for links */
+
+/* Style the login container */
+#login {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+}
+.item {
+  background-color: aliceblue;
+}
+.navbar {
+  margin-left: 490px;
+}
+a:hover {
+  background-color: rgb(20, 181, 124);
+}
+ 
+
+ width: 700px;
+  padding: 10px;
+  margin: 5px 0;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  border-bottom: 1px solid black;
+  background: transparent;
+
+
+  {{!-- <div id ="menu" class="container">
+    <div class="column">
+        <header  class="column col-3 col-md-12">
+        <h1>{{fname}}  {{lname}}</h1>
+        <h3>{{proffession}}</h3>
+        </header>
+
+
+        <section class="column col-3 col-md-12">
+        <h3>- personal information</h3>
+        <ul>
+            <li>Email     : {{this.email}}</li>
+            <li>First name: {{fname}}</li>
+            <li>Last name : {{lname}}</li>
+            <li>Gender    : {{gender}}</li>
+        </ul>
+        </section>
+
+        <section class="column col-3 col-md-12">
+        <h3>-the level of profile : {{plevel}}</h3>
+        <h3>about your self</h3>
+        <p>{{descyourself}}</p>
+        </section>
+   
+        <section class="column col-3 col-md-12">
+            <h3>-Education</h3>
+        {{#each education}} 
+        <ul>
+        <li>Degree          : {{Degree}}.</li>
+        <li>StartDate       : {{startDate}}</li>
+        <li>endDate         : {{endDate}}</li>
+        <li>Language_of_edu : {{language_of_edu}}.</li>
+        </ul>
+        {{/each}}
+        </section>
+        
+        <section class="column col-3 col-md-12">
+            <h3>-skills</h3>
+        {{#each skills}}
+          <ul>
+          <li>skill name  :{{sname}} </li>
+          <li>skill type  :{{stype}}</li>
+          <li>skill level :{{slevel}}</li>
+          </ul>
+        {{/each}}
+     </section>
+    
+     <section class="column col-3 col-md-12">
+        <h3>-your fast experience</h3>
+        {{#each experience}}
+        <ul>
+        <li>jobTitle   : {{jobTitle}}</li>
+        <li>startDate  : {{startDate}}</li>
+        <li>EndDate    : {{endDate}}</li> 
+        <li>place      : {{place}}</li> 
+        </ul>
+        {{/each}}
+    </section>
+    </div>
+        
+</div>
+
+          
+           --}}

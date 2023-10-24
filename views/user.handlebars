@@ -1,0 +1,70 @@
+
+
+    {{!-- <h1>{{admin}} - {{isLogggedin}} - {{username}} - {{testjerome}}</h1> --}}
+
+    <div id="menu" class="container">
+
+        <div class="column">
+            <header class="header">
+                <h1 class="header-h1">{{fname}}  {{lname}}</h1>
+                <h3 class="header-h3">{{proffession}}</h3>
+            </header>
+
+            <section class="section">
+                <h3 class="section-h3">Personal Information</h3><hr>
+                <ul class="section-ul">
+                    <li class="section-li">Email     : {{this.email}}</li>
+                    <li class="section-li">First name: {{fname}}</li>
+                    <li class="section-li">Last name : {{lname}}</li>
+                    <li class="section-li">Gender    : {{gender}}</li>
+                </ul>
+            </section>
+
+            <section class="section">
+                <h3 class="section-h3">Profile Level: {{plevel}}</h3><hr>
+                <h3 class="section-h3"><p><strong>About Your self :</strong></p></h3>
+                <p class="section-p">{{descyourself}}</p>
+            </section>
+
+            <section class="section">
+                <h3 class="section-h3"> Education</h3><hr>
+                {{#each education}} 
+                <ul class="section-ul">
+                    <ol>
+                    <li class="section-li">Degree          : {{Degree}}.</li>
+                    <li class="section-li">StartDate       : {{startDate}}</li>
+                    <li class="section-li">EndDate         : {{endDate}}</li>
+                    <li class="section-li">Language_of_edu : {{language_of_edu}}.</li>
+                    </ol>
+                </ul>
+                {{/each}}
+            </section>
+
+            <section class="section">
+                <h3 class="section-h3">Skills</h3><hr>
+                {{#each skills}}
+                <ul class="section-ul">
+                    <ol>
+                    <li class="section-li">skill name  :{{sname}} </li>
+                    <li class="section-li">skill type  :{{stype}}</li>
+                    <li class="section-li">skill level :{{slevel}}</li>
+                    </ol>
+                </ul>
+                {{/each}}
+            </section>
+
+            <section class="section">
+                <h3 class="section-h3">Fast Experience</h3><hr>
+                {{#each experience}}
+                <ul class="section-ul">
+                    <ol>
+                    <li class="section-li">jobTitle   : {{jobTitle}}</li>
+                    <li class="section-li">startDate  : {{startDate}}</li>
+                    <li class="section-li">EndDate    : {{endDate}}</li> 
+                    <li class="section-li">place      : {{place}}</li> 
+                    </ol>
+                </ul>
+                {{/each}}
+            </section>
+        </div>
+    </div>

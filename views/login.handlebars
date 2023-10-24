@@ -1,0 +1,29 @@
+<div id="menu" class="container">
+
+<section>
+<div id="login" class="column">
+  <form action="/login" method="post">
+  <fieldset>
+    <input type="text" name="username" id="email" required="required" placeholder="email"> 
+    <br/>
+    <label for="password"></label>
+    <input type="password" name="password" id="password" required="required"  placeholder="Password">
+    <br/>
+    <input type="submit" value="log in">
+  </fieldset>
+    {{isLoggedIn}}
+  {{#if isLoggedIn}} 
+
+   <a href="/logout" class="btn btn-link">Log in</a>
+  {{/if}}
+
+  </form>
+</div>
+</section>
+
+ 
+</div>
+
+
+
+

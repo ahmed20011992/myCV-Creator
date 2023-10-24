@@ -1,0 +1,176 @@
+Reset default styles * {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  box-sizing: border-box; /* Change to border-box for consistent box sizing */
+}
+
+/* Reset some default styles */
+body,
+h1,
+h2,
+h3,
+p,
+ul,
+li {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.6;
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+header {
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+  font-size: 36px;
+}
+
+p {
+  font-size: 18px;
+}
+
+main {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #e8e0e0;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+section {
+  margin-bottom: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+}
+
+h2 {
+  font-size: 24px;
+  border-bottom: 2px solid #333;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+ul {
+  list-style: none;
+}
+
+li {
+  margin-bottom: 5px;
+}
+
+article {
+  margin-bottom: 20px;
+}
+
+strong {
+  font-weight: bold;
+}
+#signUp {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto; /* Center the form horizontally */
+  max-width: 700px; /* Adjust the maximum width as needed */
+  padding: 10px; /* Add padding to the form container for spacing */
+  background-color: rgba(255, 255, 255, 0.8);
+  background: size 100%;
+  border-radius: 10px;
+}
+#menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: #f4f4f4;
+}
+
+#signUp {
+  background-color: #fff;
+  box-shadow: 0 0 100px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  max-width: 800px;
+  padding: 20px;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.columns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.column {
+  flex: 1;
+  padding: 10px;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+#kk {
+  margin-top: 10px;
+}
+input[type="submit"] {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-top: 60px;
+  margin-left: 20px;
+  height: 60px;
+  width: 150px;
+}
+
+input[type="submit"]:hover {
+  background-color: #555;
+}
+nav {
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  color: #000;
+}
+a:hover {
+  background-color: rgb(41, 47, 45); /* den här inte funkar */
+  transition: background-color 0.3s;
+  transform: scale(1.1);
+}

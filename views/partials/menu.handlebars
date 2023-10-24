@@ -1,0 +1,27 @@
+<header id="menu" class="container">
+    <div class="columns is-mobile"> 
+        <div class="column col-12"> 
+            <nav class="menu-row"> 
+                <a href="/" class="btn btn-link">Home</a>
+                <a href="/about" class="btn btn-link">About</a>
+                <a href="/contact" class="btn btn-link">Contact</a>
+                {{!-- <a href="/user" class="btn btn-link">User</a> --}}
+                <a href="/register" class="btn btn-link">Sign up</a>
+                {{#if isLoggedin}}
+                <div class="to-the-right">
+                    <a href="/logout" class="btn btn-link">Logout</a>
+                    {{#if admin}}
+                    <div>You are the admin of the site</div>
+                    {{/if}}
+                    <div class="to-the-right">
+                        Hi, {{fname}}! &nbsp; &nbsp;
+                    </div>
+                {{else}}
+                    <a href="/login" class="btn btn-link">Log in</a>
+                {{/if}}
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+
